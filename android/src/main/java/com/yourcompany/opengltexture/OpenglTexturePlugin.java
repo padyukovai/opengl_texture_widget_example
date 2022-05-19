@@ -4,26 +4,44 @@ import android.graphics.SurfaceTexture;
 import android.util.Log;
 import android.util.LongSparseArray;
 
+import androidx.annotation.NonNull;
+
 import java.util.Map;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.TextureRegistry;
 
-public class OpenglTexturePlugin implements MethodCallHandler {
-    private final TextureRegistry textures;
+public class OpenglTexturePlugin implements FlutterPlugin, MethodCallHandler {
+    public TextureRegistry textures;
     private LongSparseArray<OpenGLRenderer> renders = new LongSparseArray<>();
 
-    public OpenglTexturePlugin(TextureRegistry textures) {
-        this.textures = textures;
+    private MethodChannel channel;
+
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        textures = binding.getTextureRegistry();
+
+        String channelName = "opengl_texture";
+        try {
+            channel =
+                    (MethodChannel)
+                            new MethodChannel(binding.getBinaryMessenger(),
+                                    channelName);
+        } catch (Exception ex) {
+            Log.e("TAG", "Received exception while setting up PathProviderPlugin", ex);
+        }
+
+        channel.setMethodCallHandler(this);
     }
 
-    public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "opengl_texture");
-        channel.setMethodCallHandler(new OpenglTexturePlugin(registrar.textures()));
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        channel.setMethodCallHandler(null);
+        channel = null;
     }
 
     @Override

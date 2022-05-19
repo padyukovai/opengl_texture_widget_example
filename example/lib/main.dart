@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
             width: _width,
             height: _height,
             child: _controller.isInitialized
-                ? new Texture(textureId: _controller.textureId)
+                ? new Texture(textureId: _controller.textureId!)
                 : null,
           ),
         ),

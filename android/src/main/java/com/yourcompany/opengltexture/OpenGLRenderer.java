@@ -104,6 +104,10 @@ public class OpenGLRenderer implements Runnable {
         EGLConfig[] configs = new EGLConfig[1];
         int[] configSpec = getConfig();
 
+        if (!egl.eglChooseConfig(eglDisplay, configSpec, null, 0,
+                configsCount)) {
+            throw new IllegalArgumentException("eglChooseConfig failed");
+        }
         if (!egl.eglChooseConfig(eglDisplay, configSpec, configs, 1, configsCount)) {
             throw new IllegalArgumentException("Failed to choose config: " + GLUtils.getEGLErrorString(egl.eglGetError()));
         } else if (configsCount[0] > 0) {
@@ -119,11 +123,9 @@ public class OpenGLRenderer implements Runnable {
                 EGL10.EGL_RED_SIZE, 8,
                 EGL10.EGL_GREEN_SIZE, 8,
                 EGL10.EGL_BLUE_SIZE, 8,
-                EGL10.EGL_ALPHA_SIZE, 8,
+                EGL10.EGL_ALPHA_SIZE, 0,
                 EGL10.EGL_DEPTH_SIZE, 16,
                 EGL10.EGL_STENCIL_SIZE, 0,
-                EGL10.EGL_SAMPLE_BUFFERS, 1,
-                EGL10.EGL_SAMPLES, 4,
                 EGL10.EGL_NONE
         };
     }

@@ -1,6 +1,9 @@
 name: opengl_texture_example
 description: Demonstrates how to use the opengl_texture plugin.
 
+environment:
+  sdk: ">=2.15.1 <3.0.0"
+
 dependencies:
   flutter:
     sdk: flutter
